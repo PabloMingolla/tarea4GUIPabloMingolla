@@ -25,7 +25,7 @@ public class PanelPrincipal extends JPanel implements ActionListener {
     private JTextArea areaTexto;
     private int tipoOperacion;
     private double op1 = 0;
-    private String op2;
+    private String op2 = "";
 
     // Constructor
     public PanelPrincipal() {
@@ -66,67 +66,77 @@ public class PanelPrincipal extends JPanel implements ActionListener {
                     if (tipoOperacion == -1) {
                         tipoOperacion = 0;
                         //guarda en la variable op1 el valor de los numeros introducidos hasta ahora
-                        op1 = (Double.parseDouble(areaTexto.getText()));
-                        areaTexto.setText("");
+                        setop1(o);
                     } else {
-                        operacion(op1, Double.parseDouble(areaTexto.getText()));
-                        op1 = (Double.parseDouble(areaTexto.getText()));
+                        if (tipoOperacion == 3 && "0".equals(op2)) {
+                            reset();
+                            break;
+                        }
+                        setop2();
                         tipoOperacion = 0;
+                        areaTexto.setText(areaTexto.getText() + ((JButton) o).getText());
                     }
                     break;
                 case "-":
                     if (tipoOperacion == -1) {
                         tipoOperacion = 1;
-                        op1 = (Double.parseDouble(areaTexto.getText()));
-                        areaTexto.setText("");
+                        setop1(o);
                     } else {
-                        operacion(op1, (Double.parseDouble(areaTexto.getText())));
-                        op1 = (Double.parseDouble(areaTexto.getText()));
+                        if (tipoOperacion == 3 && "0".equals(op2)) {
+                            reset();
+                            break;
+                        }
+                        setop2();
                         tipoOperacion = 1;
+                        areaTexto.setText(areaTexto.getText() + ((JButton) o).getText());
                     }
                     break;
                 case "*":
                     if (tipoOperacion == -1) {
                         tipoOperacion = 2;
-                        op1 = (Double.parseDouble(areaTexto.getText()));
-                        areaTexto.setText("");
+                        setop1(o);
                     } else {
-                        operacion(op1, Double.parseDouble(areaTexto.getText()));
-                        op1 = (Double.parseDouble(areaTexto.getText()));
+                        if (tipoOperacion == 3 && "0".equals(op2)) {
+                            reset();
+                            break;
+                        }
+                        setop2();
                         tipoOperacion = 2;
+                        areaTexto.setText(areaTexto.getText() + ((JButton) o).getText());
                     }
                     break;
                 case "/":
                     if (tipoOperacion == -1) {
                         tipoOperacion = 3;
-                        op1 = (Double.parseDouble(areaTexto.getText()));
-                        areaTexto.setText("");
+                        setop1(o);
                     } else {
-                        operacion(op1, (Integer.parseInt(areaTexto.getText())));
-                        op1 = (Double.parseDouble(areaTexto.getText()));
+                        if (tipoOperacion == 3 && "0".equals(op2)) {
+                            reset();
+                            break;
+                        }
+                        setop2();
                         tipoOperacion = 3;
+                        areaTexto.setText(areaTexto.getText() + ((JButton) o).getText());
                     }
                     break;
                 case "C":
-                    tipoOperacion = -1;
-                    op1 = 0;
-                    areaTexto.setText("");
+                    reset();
                     break;
                 case "=":
-                    if (tipoOperacion == 3 && "0".equals(areaTexto.getText())) {
-                        tipoOperacion = -1;
-                        op1 = 0;
-                        areaTexto.setText("");
+                    if (tipoOperacion == 3 && "0".equals(op2)) {
+                        reset();
                         break;
                     }
                     if (tipoOperacion != -1 && areaTexto.getText() != null && !"".equals(areaTexto.getText())) {
-                        operacion(op1, (Double.parseDouble(areaTexto.getText())));
-                        op1 = (Double.parseDouble(areaTexto.getText()));
+                        setop2();
                         tipoOperacion = -1;
                     }
                     break;
                 default:
                     areaTexto.setText(areaTexto.getText() + ((JButton) o).getText());
+                    if (tipoOperacion != -1) {
+                        op2 += ((JButton) o).getText();
+                    }
                     break;
             }
 
@@ -148,5 +158,23 @@ public class PanelPrincipal extends JPanel implements ActionListener {
                 areaTexto.setText(valueOf(a / b));
                 break;
         }
+    }
+
+    private void reset() {
+        tipoOperacion = -1;
+        op1 = 0;
+        op2 = "";
+        areaTexto.setText("");
+    }
+
+    private void setop1(Object o) {
+        op1 = (Double.parseDouble(areaTexto.getText()));
+        areaTexto.setText(areaTexto.getText() + ((JButton) o).getText());
+    }
+
+    private void setop2() {
+        operacion(op1, (Double.parseDouble(op2)));
+        op1 = (Double.parseDouble(areaTexto.getText()));
+        op2 = "";
     }
 }
