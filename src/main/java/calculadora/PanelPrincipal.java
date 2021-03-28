@@ -24,7 +24,7 @@ public class PanelPrincipal extends JPanel implements ActionListener {
     private PanelBotones botonera;
     private JTextArea areaTexto;
     private int tipoOperacion;
-    private double op1 = 0;
+    private double op1;
     private String op2 = "";
 
     // Constructor
@@ -62,14 +62,18 @@ public class PanelPrincipal extends JPanel implements ActionListener {
         if (o instanceof JButton) {
             switch (((JButton) o).getText()) {
                 case "+":
-                    //si no tiene un operador registrado, lo cambia al equivalente a la operacion
+                    //si no se ha introducido ningún número, ignora el intento de introducir operaciones
+                    if(areaTexto.getText().equals("")){
+                        break;
+                    }
+                    //si no tiene un operador registrado, lo cambia al equivalente a la operacion y llama a op1
                     if (tipoOperacion == -1) {
                         tipoOperacion = 0;
-                        //guarda en la variable op1 el valor de los numeros introducidos hasta ahora
                         setop1(o);
                     } else {
-                        if (tipoOperacion == 3 && "0".equals(op2)) {
-                            reset();
+                        //si ya lo tiene, llama a op2, y luego cambia el tipo de operacion y escribe el simbolo
+                        //siempre que se encuentre con una division entre 0, se reinicia la calculadora
+                        if (entreCero()) {
                             break;
                         }
                         setop2();
@@ -78,12 +82,14 @@ public class PanelPrincipal extends JPanel implements ActionListener {
                     }
                     break;
                 case "-":
+                    if(areaTexto.getText().equals("")){
+                        break;
+                    }
                     if (tipoOperacion == -1) {
                         tipoOperacion = 1;
                         setop1(o);
                     } else {
-                        if (tipoOperacion == 3 && "0".equals(op2)) {
-                            reset();
+                        if (entreCero()) {
                             break;
                         }
                         setop2();
@@ -92,12 +98,14 @@ public class PanelPrincipal extends JPanel implements ActionListener {
                     }
                     break;
                 case "*":
+                    if(areaTexto.getText().equals("")){
+                        break;
+                    }
                     if (tipoOperacion == -1) {
                         tipoOperacion = 2;
                         setop1(o);
                     } else {
-                        if (tipoOperacion == 3 && "0".equals(op2)) {
-                            reset();
+                        if (entreCero()) {
                             break;
                         }
                         setop2();
@@ -106,12 +114,14 @@ public class PanelPrincipal extends JPanel implements ActionListener {
                     }
                     break;
                 case "/":
+                    if(areaTexto.getText().equals("")){
+                        break;
+                    }
                     if (tipoOperacion == -1) {
                         tipoOperacion = 3;
                         setop1(o);
                     } else {
-                        if (tipoOperacion == 3 && "0".equals(op2)) {
-                            reset();
+                        if (entreCero()) {
                             break;
                         }
                         setop2();
@@ -123,17 +133,19 @@ public class PanelPrincipal extends JPanel implements ActionListener {
                     reset();
                     break;
                 case "=":
-                    if (tipoOperacion == 3 && "0".equals(op2)) {
-                        reset();
+                    if (entreCero()) {
                         break;
                     }
-                    if (tipoOperacion != -1 && areaTexto.getText() != null && !"".equals(areaTexto.getText())) {
+                    //se comprueba que no haya datos erroneos a la hora de calcular
+                    if (tipoOperacion != -1 && areaTexto.getText() != null && !areaTexto.getText().equals("")) {
                         setop2();
                         tipoOperacion = -1;
                     }
                     break;
                 default:
+                    //si se introduce un número, se añade al areaTexto
                     areaTexto.setText(areaTexto.getText() + ((JButton) o).getText());
+                    //y si ya se esta trabajando con el segundo número, es decir, ya se ha introducido un operador, se guarda el número en el String op2
                     if (tipoOperacion != -1) {
                         op2 += ((JButton) o).getText();
                     }
@@ -143,6 +155,7 @@ public class PanelPrincipal extends JPanel implements ActionListener {
         }
     }
 
+    //realiza la operacion que toque, cambiando areaTexto al resultado
     private void operacion(double a, double b) {
         switch (tipoOperacion) {
             case 0:
@@ -168,13 +181,25 @@ public class PanelPrincipal extends JPanel implements ActionListener {
     }
 
     private void setop1(Object o) {
+        //guarda en la variable op1 el valor de los numeros introducidos hasta ahora
         op1 = (Double.parseDouble(areaTexto.getText()));
         areaTexto.setText(areaTexto.getText() + ((JButton) o).getText());
     }
 
     private void setop2() {
+        //llama a operacion y sustituye areaTexto por el ressultado
         operacion(op1, (Double.parseDouble(op2)));
         op1 = (Double.parseDouble(areaTexto.getText()));
+        //resetea op2
         op2 = "";
+    }
+
+    private boolean entreCero() {
+        if (tipoOperacion == 3 && "0".equals(op2)) {
+            reset();
+            return true;
+        } else {
+            return false;
+        }
     }
 }
